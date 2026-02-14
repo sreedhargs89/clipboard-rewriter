@@ -1,9 +1,25 @@
 {
   "name": "Clipboard Rewriter",
   "short_name": "Rewriter",
+  "description": "One-tap clipboard rewriting powered by OpenAI",
   "start_url": "./?mode=quick",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0f0f0f",
   "theme_color": "#6c63ff",
-  "icons": []
+  "icons": [
+    {
+      "src": "icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
