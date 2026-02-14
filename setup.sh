@@ -18,16 +18,24 @@ echo "=============================="
 echo ""
 
 # ---------------------------------------------------------------
-# 1. Check / install openai
+# 1. Check / install Python dependencies
 # ---------------------------------------------------------------
 echo "📦 Checking Python dependencies..."
-if python3 -c "import openai" 2>/dev/null; then
-    echo "   ✅ openai is already installed"
-else
-    echo "   📥 Installing openai..."
-    pip3 install --user openai
-    echo "   ✅ openai installed"
-fi
+
+install_pkg() {
+    local pkg="$1"
+    if python3 -c "import $pkg" 2>/dev/null; then
+        echo "   ✅ $pkg is already installed"
+    else
+        echo "   📥 Installing $pkg..."
+        pip3 install --user "$pkg"
+        echo "   ✅ $pkg installed"
+    fi
+}
+
+install_pkg openai
+install_pkg rumps
+install_pkg pynput
 
 # ---------------------------------------------------------------
 # 2. Make scripts executable
@@ -36,6 +44,7 @@ echo ""
 echo "🔑 Making scripts executable..."
 chmod +x "$SCRIPT_DIR/rewrite.py"
 chmod +x "$SCRIPT_DIR/rewrite.sh"
+chmod +x "$SCRIPT_DIR/menubar_app.py"
 echo "   ✅ Done"
 
 # ---------------------------------------------------------------
@@ -249,7 +258,23 @@ echo ""
 echo "=============================="
 echo "✅ Setup complete!"
 echo ""
-echo "📌 NEXT STEP — Assign a keyboard shortcut:"
+echo "🚀 RECOMMENDED — Launch the Menu Bar App:"
+echo ""
+echo "   python3 ${SCRIPT_DIR}/menubar_app.py &"
+echo ""
+echo "   This gives you:"
+echo "   • A persistent ✏️ icon in your menu bar"
+echo "   • Click to rewrite in any mode — no hotkey setup needed"
+echo "   • Built-in global hotkeys: ⌥R, ⌥P, ⌥C, ⌥G, ⌥W"
+echo "   • Settings access and config reload from the menu"
+echo ""
+echo "   To launch automatically on login:"
+echo "   1. Open System Settings → General → Login Items"
+echo "   2. Add menubar_app.py (or create an Automator app wrapper)"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "📌 ALTERNATIVE — Manual keyboard shortcuts (Automator Quick Actions):"
 echo ""
 echo "   1. Open System Settings → Keyboard → Keyboard Shortcuts → Services"
 echo "      (on older macOS: System Preferences → Keyboard → Shortcuts → Services)"
@@ -259,10 +284,10 @@ echo ""
 echo "   3. Find these Quick Actions and assign hotkeys:"
 echo "      • Clipboard Rewriter              → e.g. ⌥R  (Option+R)"
 echo "      • Clipboard Rewriter (Professional) → e.g. ⌥P"
-echo "      • Clipboard Rewriter (Casual)       → e.g. ⌥C"  
+echo "      • Clipboard Rewriter (Casual)       → e.g. ⌥C"
 echo "      • Clipboard Rewriter (Fix Grammar)  → e.g. ⌥G"
 echo ""
-echo "   4. Done! Now copy text, press your hotkey, and paste the rewritten version."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "💡 TIP: You can also run directly from terminal:"
 echo "   ${SCRIPT_DIR}/rewrite.sh           # default rewrite"
