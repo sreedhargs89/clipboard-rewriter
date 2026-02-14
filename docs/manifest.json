@@ -1,0 +1,9 @@
+{
+  "name": "Clipboard Rewriter",
+  "short_name": "Rewriter",
+  "start_url": "./?mode=quick",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#6c63ff",
+  "icons": []
+}
