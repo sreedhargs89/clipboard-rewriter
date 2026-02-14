@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Rewriter">
+<link rel="manifest" href="manifest.json">
 <title>Clipboard Rewriter</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -736,10 +737,16 @@ function applyMode() {
 // --- Init ---
 loadSettings();
 
-// Restore last mode or check hash
-if (location.hash === "#quick") {
-  applyMode();
-} else if (localStorage.getItem("cw_mode") === "quick" && !location.hash) {
+// Detect quick mode from hash, query param, or saved preference
+function isQuickRequested() {
+  if (location.hash === "#quick") return true;
+  const params = new URLSearchParams(location.search);
+  if (params.get("mode") === "quick") return true;
+  if (localStorage.getItem("cw_mode") === "quick") return true;
+  return false;
+}
+
+if (isQuickRequested()) {
   location.hash = "quick";
   applyMode();
 }
