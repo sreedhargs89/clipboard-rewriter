@@ -15,10 +15,10 @@ create_service() {
     local name="$1"
     local mode="$2"
     local workflow_dir="$SERVICES_DIR/${name}.workflow/Contents"
-    
+
     mkdir -p "$workflow_dir"
-    
-    # Create proper Info.plist for a Quick Action (Service)
+
+    # Info.plist — required for macOS to register it as a Service
     cat > "$workflow_dir/Info.plist" << 'INFOPLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -40,7 +40,12 @@ create_service() {
 </plist>
 INFOPLIST
 
-    # Create the workflow document
+    local uuid1 uuid2 uuid3
+    uuid1=$(uuidgen)
+    uuid2=$(uuidgen)
+    uuid3=$(uuidgen)
+
+    # document.wflow — matches the exact format macOS expects
     cat > "$workflow_dir/document.wflow" << WFLOW
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -78,6 +83,11 @@ INFOPLIST
 				<string>AMCategoryUtilities</string>
 				<key>AMIconName</key>
 				<string>Automator</string>
+				<key>AMKeywords</key>
+				<array>
+					<string>Shell</string>
+					<string>Script</string>
+				</array>
 				<key>AMName</key>
 				<string>Run Shell Script</string>
 				<key>AMProvides</key>
@@ -89,6 +99,8 @@ INFOPLIST
 						<string>com.apple.cocoa.string</string>
 					</array>
 				</dict>
+				<key>AMTag</key>
+				<string>AMTagUtilities</string>
 				<key>ActionBundlePath</key>
 				<string>/System/Library/Automator/Run Shell Script.action</string>
 				<key>ActionName</key>
@@ -121,16 +133,16 @@ INFOPLIST
 				<key>Class Name</key>
 				<string>RunShellScriptAction</string>
 				<key>InputUUID</key>
-				<string>$(uuidgen)</string>
+				<string>${uuid1}</string>
 				<key>Keywords</key>
 				<array>
 					<string>Shell</string>
 					<string>Script</string>
 				</array>
 				<key>OutputUUID</key>
-				<string>$(uuidgen)</string>
+				<string>${uuid2}</string>
 				<key>UUID</key>
-				<string>$(uuidgen)</string>
+				<string>${uuid3}</string>
 				<key>UnlocalizedApplications</key>
 				<array>
 					<string>Automator</string>
@@ -148,6 +160,17 @@ INFOPLIST
 						<key>type</key>
 						<integer>8</integer>
 					</dict>
+					<key>1</key>
+					<dict>
+						<key>default value</key>
+						<string></string>
+						<key>name</key>
+						<string>source</string>
+						<key>required</key>
+						<string>NO</string>
+						<key>type</key>
+						<integer>8</integer>
+					</dict>
 				</dict>
 				<key>isViewVisible</key>
 				<true/>
@@ -162,30 +185,6 @@ INFOPLIST
 	<dict/>
 	<key>workflowMetaData</key>
 	<dict>
-		<key>applicationBundleIDsByPath</key>
-		<dict/>
-		<key>applicationPaths</key>
-		<array/>
-		<key>inputTypeIdentifier</key>
-		<string>com.apple.Automator.nothing</string>
-		<key>outputTypeIdentifier</key>
-		<string>com.apple.Automator.nothing</string>
-		<key>presentationMode</key>
-		<integer>15</integer>
-		<key>processesInput</key>
-		<integer>0</integer>
-		<key>serviceApplicationGroupName</key>
-		<string>General</string>
-		<key>serviceApplicationPath</key>
-		<string></string>
-		<key>serviceInputTypeIdentifier</key>
-		<string>com.apple.Automator.nothing</string>
-		<key>serviceProcessesInput</key>
-		<integer>0</integer>
-		<key>systemImageName</key>
-		<string>NSActionTemplate</string>
-		<key>useAutomaticInputType</key>
-		<integer>0</integer>
 		<key>workflowTypeIdentifier</key>
 		<string>com.apple.Automator.servicesMenu</string>
 	</dict>
@@ -196,12 +195,25 @@ WFLOW
     echo "   ✅ ${name}"
 }
 
+# Remove stale workflows first
+rm -rf "$SERVICES_DIR/Clipboard Rewrite.workflow"
+rm -rf "$SERVICES_DIR/Clipboard Rewrite Professional.workflow"
+rm -rf "$SERVICES_DIR/Clipboard Rewrite Casual.workflow"
+rm -rf "$SERVICES_DIR/Clipboard Rewrite Fix.workflow"
+rm -rf "$SERVICES_DIR/Clipboard Rewrite Prompt.workflow"
+rm -rf "$SERVICES_DIR/Clipboard Rewrite Tweet.workflow"
+
 # Create all Quick Actions
 create_service "Clipboard Rewrite"              "default"
-create_service "Clipboard Rewrite Professional"  "pro"
-create_service "Clipboard Rewrite Casual"        "cas"
-create_service "Clipboard Rewrite Fix"           "fix"
-create_service "Clipboard Rewrite Prompt"        "prompt"
+create_service "Clipboard Rewrite Professional" "pro"
+create_service "Clipboard Rewrite Casual"       "cas"
+create_service "Clipboard Rewrite Fix"          "fix"
+create_service "Clipboard Rewrite Prompt"       "prompt"
+create_service "Clipboard Rewrite Tweet"        "tweet"
+
+# Force macOS to reload Services
+/System/Library/CoreServices/pbs -update 2>/dev/null || true
+killall -HUP pbs 2>/dev/null || true
 
 echo ""
 echo "✅ Quick Actions installed!"
@@ -216,6 +228,7 @@ echo "      • Clipboard Rewrite Professional → ⌥P"
 echo "      • Clipboard Rewrite Casual       → ⌥C"
 echo "      • Clipboard Rewrite Fix          → ⌥G"
 echo "      • Clipboard Rewrite Prompt       → ⌥W"
+echo "      • Clipboard Rewrite Tweet        → ⌃T"
 echo ""
-echo "   ⚠️  If they don't appear, try logging out and back in."
+echo "   ⚠️  If they still don't appear, log out and back in once."
 echo ""

@@ -72,6 +72,14 @@ DEFAULT_CONFIG = {
             "Make the prompt detailed enough to get excellent results from an AI model. "
             "Do NOT add any preamble, explanation, or commentary — return ONLY the rewritten prompt."
         ),
+        "tweet": (
+            "You are a social media expert who crafts viral Twitter/X posts. "
+            "Transform the following text into a single, highly engaging tweet. "
+            "Make it punchy, conversational, and impossible to scroll past — open with a strong hook. "
+            "Keep it under 280 characters. Use 1-2 relevant emojis where they add impact. "
+            "Add 2-3 relevant hashtags at the end only if space allows. "
+            "Do NOT add any preamble, explanation, or commentary — return ONLY the tweet text."
+        ),
     },
 }
 
@@ -91,6 +99,9 @@ MODE_ALIASES = {
     "g": "fix",
     "prompt": "prompt",
     "pr": "prompt",
+    "tweet": "tweet",
+    "tw": "tweet",
+    "t": "tweet",
 }
 
 
@@ -185,7 +196,7 @@ def main():
     parser.add_argument(
         "--mode", "-m",
         default="default",
-        help="Rewriting mode: default | professional/pro | casual/cas | fix/grammar",
+        help="Rewriting mode: default | professional/pro | casual/cas | fix/grammar | tweet/tw",
     )
     parser.add_argument(
         "--init-config",
